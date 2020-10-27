@@ -7,7 +7,7 @@ import { useState } from 'react';
 
 function App() {
 
-  const [activeFilter, setActiveFilter] = useState('Tels');
+  const [activeFilter, setActiveFilter] = useState('');
   const [selectedPerson, setSelectedPerson] = useState();
 
   const persons = basepersons.filter(pers => pers.lastname.toLocaleLowerCase().includes(activeFilter.trim().toLowerCase()));
