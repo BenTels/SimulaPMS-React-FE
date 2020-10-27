@@ -87,7 +87,7 @@ let PersonBillingAddress = (props) => (
             <dt>Same as correspondence address:</dt>
             <dd>
                 {props.billing ?
-                    <span><ion-icon name="close-outline"></ion-icon> No</span>
+                    <span><ion-icon name="close-circle-sharp"></ion-icon> No</span>
                     : <span><ion-icon name="checkbox-sharp"></ion-icon> Yes</span>
                 }
             </dd>
