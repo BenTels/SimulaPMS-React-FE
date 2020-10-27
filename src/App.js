@@ -3,11 +3,13 @@ import { Header } from './HeaderComponent';
 import { PersonSelection } from './PersonSelectionComponent';
 import { PersonDisplay } from './PersonDisplayComponent';
 import { persons as basepersons } from './TEMPORARY_PERSONS';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+const LOCALSTORAGE_FILTER_KEY = 'activeFilter';
 
 function App() {
 
-  const [activeFilter, setActiveFilter] = useState('');
+  const [activeFilter, setActiveFilter] = useState(localStorage.getItem(LOCALSTORAGE_FILTER_KEY) || '');
   const [selectedPerson, setSelectedPerson] = useState();
 
   const persons = basepersons.filter(pers => pers.lastname.toLocaleLowerCase().includes(activeFilter.trim().toLowerCase()));
@@ -20,6 +22,8 @@ function App() {
   }
 
   const filterChangedHandler = (evt) => setActiveFilter(evt.target.value);
+
+  useEffect(() => localStorage.setItem(LOCALSTORAGE_FILTER_KEY, activeFilter), [activeFilter]);
 
   return (
     <div>
