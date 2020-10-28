@@ -2,12 +2,11 @@ import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { lastNameWithCommaIfNecessary, nameToInitial } from './Person'
 
-export let PersonDisplay = (props) => {
-    let person = props.person;
+export let PersonDisplay = ({person, removeHandler}) => {
     if (person) {
         return (
             <main>
-                <PersonHeader person={person} />
+                <PersonHeader person={person} removePersonHandler={removeHandler} />
                 <PersonNames person={person} />
                 <PersonContact person={person} />
                 <PersonBillingAddress billing={person.billingAddress} main={person.mainCorrespondenceAddress} />
@@ -16,13 +15,14 @@ export let PersonDisplay = (props) => {
     } else return (<main />)
 };
 
-let PersonHeader = (props) => (
+let PersonHeader = ({person, removePersonHandler}) => (
     <div>
-        <h1 className="lastname">{lastNameWithCommaIfNecessary(props.person) + '\u00A0'}</h1>
-        {props.person.firstnames && props.person.firstnames.map(fn => <h2 className="initials" key={uuidv4()}>{nameToInitial(fn)}</h2>)}
-        {props.person.middlenames && props.person.middlenames.map(mn => <h2 className="initials" key={uuidv4()}>{nameToInitial(mn)}</h2>)}
-        <h4 className="pers-id">({props.person.id})</h4>
-        <h1 className="age-class">{props.person.ageclass}</h1>
+        <h1 className="lastname">{lastNameWithCommaIfNecessary(person) + '\u00A0'}</h1>
+        {person.firstnames && person.firstnames.map(fn => <h2 className="initials" key={uuidv4()}>{nameToInitial(fn)}</h2>)}
+        {person.middlenames && person.middlenames.map(mn => <h2 className="initials" key={uuidv4()}>{nameToInitial(mn)}</h2>)}
+        <h4 className="pers-id">({person.id})</h4>
+        <h1 className="age-class">{person.ageclass}</h1>
+        <button value="Delete" class="delete-person-button" onClick={() => removePersonHandler(person)}>Delete</button>
     </div>
 );
 

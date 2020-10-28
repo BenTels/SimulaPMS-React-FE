@@ -27,6 +27,10 @@ nav li a {
     background-color: black;
 }
 
+nav p {
+    color: thistle;
+}
+
 main {
     margin-left: 15%;
     max-width: 70%;
@@ -157,4 +161,10 @@ span.lastname {
 dd {
     align-content: flex-start;
     display: grid;
+}
+
+.delete-person-button {
+    margin-left: 25em;
+    position: relative;
+    top: -7em;
 }
