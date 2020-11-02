@@ -21,10 +21,28 @@ export function toInitialString(nameArr) {
     return name;
 }
 
-export let nameToInitial = (name) => ' ' + name.charAt(0) + '.';
+export let nameToInitial = (name) => name && name !== '' ? ' ' + name.charAt(0) + '.' : '';
 
 export let personComparator = (left, right) => {
     let leftName = toLastNameAndInitials(left);
     let rightName = toLastNameAndInitials(right);
-    return leftName.localeCompare(rightName, 'en', {sensitivity:'base', ignorePunctuation: true});
+    return leftName.localeCompare(rightName, 'en', { sensitivity: 'base', ignorePunctuation: true });
 };
+
+export const buildAddressObject = (lines, country) => {
+    if (country) {
+        if (lines && lines.reduce((accumulator, currentLine) => accumulator && currentLine && currentLine !== '')) {
+            return { lines, country };
+        } else {
+            return { lines: null, country };
+        }
+    } else {
+        return null;
+    }
+}
+
+export const toPhoneNumbers = (phoneDataList) => {
+    let phoneNumbers = phoneDataList.map(([isMob, num]) => { return { 'number': num, 'mobile': isMob }; });
+    return (phoneNumbers.length === 0 ? null : phoneNumbers);
+
+}

@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { lastNameWithCommaIfNecessary, nameToInitial } from './Person'
+import { lastNameWithCommaIfNecessary, nameToInitial, buildAddressObject, toPhoneNumbers } from './Person'
 
 export let PersonDisplay = ({ person, removeHandler }) => {
 
     const [isEditing, setEditing] = useState(false);
 
     const switchEditMode = () => setEditing(!isEditing);
+
+    useEffect(() => setEditing(false), [person]);
 
     if (person) {
         return (
@@ -34,7 +36,7 @@ let PersonHeader = ({ person, removePersonHandler, isEditing, buttonHandler }) =
         <h4 className="pers-id">({person.id})</h4>
         <h1 className="age-class">{person.ageclass}</h1>
         {isEditing ?
-            <span className="person-button-pair"><button value="Save" onClick={() => buttonHandler()}>Save</button>
+            <span className="person-button-pair"><button value="Save" onClick={() => saveButtonHandler(person, buttonHandler)}>Save</button>
                 <button value="Cancel" onClick={() => buttonHandler()}>Cancel</button></span>
             : <span className="person-button-pair"><button value="Edit" className="edit-person-button" onClick={() => buttonHandler()}>Edit</button>
                 <button value="Delete" onClick={() => removePersonHandler(person)}>Delete</button></span>
@@ -63,7 +65,9 @@ let PersonContact = (props) => (
                     <>
                         {props.person.phonenumbers &&
                             props.person.phonenumbers.map((phn, idx) =>
-                                <span key={uuidv4()}><input type="checkbox" checked={phn.mobile} id={`'ismobile.'${idx}`} /> <input id={`'number.'${idx}`} value={phn.number} /></span>)}
+                                <span key={uuidv4()}><input type="checkbox" defaultChecked={phn.mobile} id={`ismobile.${idx}`} /> <input id={`number.${idx}`} defaultValue={phn.number} /></span>)}
+                        {!props.person.phonenumbers &&
+                            <span key={uuidv4()}><input type="checkbox" defaultChecked="true" id='ismobile.0' /> <input id='number.0' defaultValue="" /></span>}
                     </>
                     : <>{props.person.phonenumbers &&
                         props.person.phonenumbers.map((phn, idx) =>
@@ -81,8 +85,8 @@ let PersonAddress = ({ address, addressType, isEditing, copied }) => (
         <dt>Address:</dt>
         <dd>
             {isEditing ?
-                <>{<textarea id={`${`${addressType}`}.lines`} value={copied ? '' : address.lines.join('\n')} />}
-                    <input id={`${`${addressType}`}.country`} value={copied ? '': address.country} />
+                <>{<textarea id={`${`${addressType}`}.lines`} defaultValue={copied || !address || !address.lines ? '' : address.lines.join('\n')} />}
+                    <input id={`${`${addressType}`}.country`} defaultValue={copied || !address || !address.country ? '' : address.country} />
                 </>
                 : <>{address.lines &&
                     address.lines.map((aline, idx) => <span className={`addressline ${0 < idx ? 'notfirst' : ''}`} key={uuidv4()}>{aline}</span>)}
@@ -115,11 +119,11 @@ let SimpleDefinition = ({ item, classId, term, isEditing }) => (
         <dt>{term}</dt>
         <dd>
             {isEditing ?
-                <span className={classId}><input id={classId} value={item} /></span>
+                <span className={classId}><input id={classId} defaultValue={item} /></span>
                 : <span className={classId}>{item}</span>
             }
-            {!item && <br />}
         </dd>
+        {!item && <br />}
     </>
 );
 
@@ -128,10 +132,55 @@ let ListDefinition = ({ list, classId, term, isEditing, children }) => (
         <dt>{term}</dt>
         <dd>
             {isEditing ?
-                <span>{list && <textarea id={classId} value={list.join('\n')} />}</span>
+                <span>{<textarea id={classId} defaultValue={(list && list.join('\n')) || ''} />}</span>
                 : <>{list && list.map((fn, idx) => <span className={`${classId} ${0 < idx ? 'notfirst' : ''}`} key={uuidv4()}>{children} {fn}</span>)}</>
             }
-            {!list && <br />}
         </dd>
+        {!list && <br />}
     </>
 );
+
+const saveButtonHandler = (person, editModeControlFunction) => {
+    person.firstnames = nullIfEmpty(document.getElementById('firstname').value.split('\n'));
+    person.middlenames = nullIfEmpty(document.getElementById('middlename').value.split('\n'));
+    let newLastName = document.getElementById('lastname').value;
+    person.lastname = (newLastName !== '' ? newLastName : person.lastname);
+    person.dob = nullIfEmpty(document.getElementById('dob').value);
+    person.emailaddresses = nullIfEmpty(document.getElementById('email').value.split('\n'));
+
+    let phonedata = collectPhoneData();
+    person.phonenumbers = toPhoneNumbers(phonedata);
+
+    let corLines = nullIfEmpty(document.getElementById('correspondence.lines').value.split('\n'));
+    let corCountry = nullIfEmpty(document.getElementById('correspondence.country').value);
+    person.mainCorrespondenceAddress = buildAddressObject(corLines, corCountry);
+
+    let bilLines = nullIfEmpty(document.getElementById('billing.lines').value.split('\n'));
+    let bilCountry = nullIfEmpty(document.getElementById('billing.country').value);
+    person.billingAddress = buildAddressObject(bilLines, bilCountry);
+
+    editModeControlFunction();
+};
+
+function nullIfEmpty(obj) {
+    if (obj === '' || obj === []) {
+        return undefined;
+    }
+    return obj;
+}
+
+function collectPhoneData() {
+    const phoneData = [];
+    let idx = 0;
+    let ismobile = document.getElementById('ismobile.' + idx);
+    let num = document.getElementById('number.' + idx);
+    while (ismobile && num) {
+        if (num.value && num.value !== '') {
+            phoneData.push([ismobile.checked, num.value]);
+        }
+        idx++;
+        ismobile = document.getElementById('ismobile.' + idx);
+        num = document.getElementById('number.' + idx);
+    }
+    return phoneData;
+}
