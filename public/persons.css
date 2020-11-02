@@ -163,7 +163,7 @@ dd {
     display: grid;
 }
 
-.delete-person-button {
+.person-button-pair {
     margin-left: 25em;
     position: relative;
     top: -7em;
