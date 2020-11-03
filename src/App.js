@@ -2,7 +2,7 @@ import './App.css';
 import { Header } from './HeaderComponent';
 import { PersonSelection } from './PersonSelectionComponent';
 import { PersonDisplay } from './PersonDisplayComponent';
-import { loadPersonsList, removePersonFromListGenerator, personReducer, PERSON_INITIAL_STATE} from './PersonsServiceConnector'
+import { loadPersonsList, removePersonFromListGenerator, updatePersonInListGenerator, personReducer, PERSON_INITIAL_STATE} from './PersonsServiceConnector'
 import { useEffect, useReducer, useState } from 'react';
 import { usePersistableState } from './UsePersistableState';
 
@@ -30,15 +30,17 @@ function App() {
   }
 
   const removePersonHandler = removePersonFromListGenerator(dispatchPersons, setSelectedPerson);
+  const updatePersonHandler = updatePersonInListGenerator(dispatchPersons, setSelectedPerson);
 
   useEffect(() => localStorage.setItem(LOCALSTORAGE_FILTER_KEY, activeFilter), [activeFilter]);
   useEffect(() => loadPersonsList(dispatchPersons, activeFilter), [activeFilter]);
+  useEffect(() => console.log(loadedPersons), [loadedPersons]);
 
   return (
     <div>
       <Header filterText={activeFilter} filterChangedHandler={filterChangedHandler} />
       <PersonSelection personData={{ persons, loadState, selectPersonClickHandler }} />
-      <PersonDisplay person={selectedPerson} removeHandler={removePersonHandler} />
+      <PersonDisplay person={selectedPerson} removeHandler={removePersonHandler} updateHandler={updatePersonHandler} />
     </div>
   );
 }

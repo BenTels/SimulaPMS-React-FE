@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { lastNameWithCommaIfNecessary, nameToInitial, buildAddressObject, toPhoneNumbers } from './Person'
+import { lastNameWithCommaIfNecessary, nameToInitial, buildPerson } from './Person'
 
-export let PersonDisplay = ({ person, removeHandler }) => {
+export let PersonDisplay = ({ person, removeHandler, updateHandler }) => {
 
     const [isEditing, setEditing] = useState(false);
 
@@ -11,9 +11,11 @@ export let PersonDisplay = ({ person, removeHandler }) => {
     useEffect(() => setEditing(false), [person]);
 
     if (person) {
+        console.log('Now displaying: ' + JSON.stringify(person));
+
         return (
             <main>
-                <PersonHeader person={person} removePersonHandler={removeHandler} isEditing={isEditing} buttonHandler={switchEditMode} />
+                <PersonHeader person={person} removePersonHandler={removeHandler} isEditing={isEditing} buttonHandler={switchEditMode} updatePersonHandler={updateHandler} />
                 {isEditing ? <form>
                     <PersonNames person={person} isEditing={isEditing} />
                     <PersonContact person={person} isEditing={isEditing} />
@@ -28,7 +30,7 @@ export let PersonDisplay = ({ person, removeHandler }) => {
     } else return (<main />)
 };
 
-let PersonHeader = ({ person, removePersonHandler, isEditing, buttonHandler }) => (
+let PersonHeader = ({ person, removePersonHandler, isEditing, buttonHandler, updatePersonHandler }) => (
     <div>
         <h1 className="lastname">{lastNameWithCommaIfNecessary(person) + '\u00A0'}</h1>
         {person.firstnames && person.firstnames.map(fn => <h2 className="initials" key={uuidv4()}>{nameToInitial(fn)}</h2>)}
@@ -36,7 +38,7 @@ let PersonHeader = ({ person, removePersonHandler, isEditing, buttonHandler }) =
         <h4 className="pers-id">({person.id})</h4>
         <h1 className="age-class">{person.ageclass}</h1>
         {isEditing ?
-            <span className="person-button-pair"><button value="Save" onClick={() => saveButtonHandler(person, buttonHandler)}>Save</button>
+            <span className="person-button-pair"><button value="Save" onClick={() => saveButtonHandler(person, buttonHandler, updatePersonHandler)}>Save</button>
                 <button value="Cancel" onClick={() => buttonHandler()}>Cancel</button></span>
             : <span className="person-button-pair"><button value="Edit" className="edit-person-button" onClick={() => buttonHandler()}>Edit</button>
                 <button value="Delete" onClick={() => removePersonHandler(person)}>Delete</button></span>
@@ -140,31 +142,34 @@ let ListDefinition = ({ list, classId, term, isEditing, children }) => (
     </>
 );
 
-const saveButtonHandler = (person, editModeControlFunction) => {
-    person.firstnames = nullIfEmpty(document.getElementById('firstname').value.split('\n'));
-    person.middlenames = nullIfEmpty(document.getElementById('middlename').value.split('\n'));
+const saveButtonHandler = (person, editModeControlFunction, serviceCall) => {
+    let firstnames = nullIfEmpty(document.getElementById('firstname').value.split('\n'));
+    let middlenames = nullIfEmpty(document.getElementById('middlename').value.split('\n'));
     let newLastName = document.getElementById('lastname').value;
-    person.lastname = (newLastName !== '' ? newLastName : person.lastname);
-    person.dob = nullIfEmpty(document.getElementById('dob').value);
-    person.emailaddresses = nullIfEmpty(document.getElementById('email').value.split('\n'));
-
+    let lastname = (newLastName !== '' ? newLastName : person.lastname);
+    let dob = nullIfEmpty(document.getElementById('dob').value);
+    let emailaddresses = nullIfEmpty(document.getElementById('email').value.split('\n'));
     let phonedata = collectPhoneData();
-    person.phonenumbers = toPhoneNumbers(phonedata);
-
     let corLines = nullIfEmpty(document.getElementById('correspondence.lines').value.split('\n'));
     let corCountry = nullIfEmpty(document.getElementById('correspondence.country').value);
-    person.mainCorrespondenceAddress = buildAddressObject(corLines, corCountry);
-
     let bilLines = nullIfEmpty(document.getElementById('billing.lines').value.split('\n'));
     let bilCountry = nullIfEmpty(document.getElementById('billing.country').value);
-    person.billingAddress = buildAddressObject(bilLines, bilCountry);
 
-    editModeControlFunction();
+    let newPerson = buildPerson(person.id, lastname, firstnames, middlenames, dob, emailaddresses, phonedata, corLines, corCountry, bilLines, bilCountry);
+    serviceCall(newPerson, editModeControlFunction);
+
+    // editModeControlFunction();
 };
 
 function nullIfEmpty(obj) {
     if (obj === '' || obj === []) {
         return undefined;
+    }
+    if (Array.isArray(obj)) {
+        let emptiesOnly = obj.reduce((accumulator, currVal) => accumulator && (!currVal || currVal === ''), true);
+        if (emptiesOnly) {
+            return undefined;
+        }
     }
     return obj;
 }

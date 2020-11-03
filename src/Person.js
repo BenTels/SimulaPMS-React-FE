@@ -29,6 +29,21 @@ export let personComparator = (left, right) => {
     return leftName.localeCompare(rightName, 'en', { sensitivity: 'base', ignorePunctuation: true });
 };
 
+export const buildPerson = (id, lastname, firstnames = [], middlenames = [], dob = null, emailAddresses = [], phonedata = [], correspondenceAddressLines = [], correspondenceAddressCountry = '', billingAddressLines = [], billingAddressCountry = '', ageclass='ADULT') => {
+    return {
+        id,
+        lastname,
+        firstnames,
+        middlenames,
+        dob,
+        ageclass,
+        emailaddresses: emailAddresses,
+        phonenumbers: toPhoneNumbers(phonedata),
+        mainCorrespondenceAddress: buildAddressObject(correspondenceAddressLines, correspondenceAddressCountry),
+        billingAddress: buildAddressObject(billingAddressLines, billingAddressCountry)
+    }
+};
+
 export const buildAddressObject = (lines, country) => {
     if (country) {
         if (lines && lines.reduce((accumulator, currentLine) => accumulator && currentLine && currentLine !== '')) {
