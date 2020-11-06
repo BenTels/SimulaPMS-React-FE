@@ -41,8 +41,31 @@ export const loadPersonsList = (dispatchPersons, activeFilter) => {
     getPersonsList(dispatchPersons, activeFilter);
 }
 
+export const addPersonToListGenerator = (dispatchPerson, selectedPersonUpdater) => {
+    return (personToAdd, afterSuccessCallback = undefined, afterFailureCallback = undefined) => {
+        const heads = new Headers({ 'Content-Type': 'application/json' });
+        const request = new Request(SERVICE_ENDPOINT, { method: 'POST', body: JSON.stringify(personToAdd), headers: heads });
+        
+        console.log(afterSuccessCallback);
+        console.log(afterFailureCallback);
+        fetch(request)
+            .then(result => {
+                if (result.ok) {
+                    selectedPersonUpdater();
+                    loadPersonsList(dispatchPerson, '');
+                    if (afterSuccessCallback) {
+                        afterSuccessCallback();
+                    }
+                } else {
+                    if (afterFailureCallback) {
+                        result.json().then(o => afterFailureCallback(o));
+                    }
+                }
+            }).catch(reason => console.log(reason));
+        }
+}
+
 export const removePersonFromListGenerator = (dispatchPerson, selectedPersonUpdater) => {
-    /* Later: add service calls */
     return (personToRemove) => {
         const endpoint = SERVICE_ENDPOINT + '/' + personToRemove.id;
         const request = new Request(endpoint, { method: 'DELETE' });

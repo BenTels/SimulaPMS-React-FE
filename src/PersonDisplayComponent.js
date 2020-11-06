@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { lastNameWithCommaIfNecessary, nameToInitial, buildPerson } from './Person'
+import { lastNameWithCommaIfNecessary, nameToInitial, buildPersonFromPerson } from './Person'
 
 export let PersonDisplay = ({ person, removeHandler, updateHandler }) => {
 
@@ -11,8 +11,6 @@ export let PersonDisplay = ({ person, removeHandler, updateHandler }) => {
     useEffect(() => setEditing(false), [person]);
 
     if (person) {
-        console.log('Now displaying: ' + JSON.stringify(person));
-
         return (
             <main>
                 <PersonHeader person={person} removePersonHandler={removeHandler} isEditing={isEditing} buttonHandler={switchEditMode} updatePersonHandler={updateHandler} />
@@ -90,11 +88,10 @@ let PersonAddress = ({ address, addressType, isEditing, copied }) => (
                 <>{<textarea id={`${`${addressType}`}.lines`} defaultValue={copied || !address || !address.lines ? '' : address.lines.join('\n')} />}
                     <input id={`${`${addressType}`}.country`} defaultValue={copied || !address || !address.country ? '' : address.country} />
                 </>
-                : <>{address.lines &&
-                    address.lines.map((aline, idx) => <span className={`addressline ${0 < idx ? 'notfirst' : ''}`} key={uuidv4()}>{aline}</span>)}
-                    {address.country && <span className={`countryline ${address.lines ? 'notfirst' : ''}`}>{address.country}</span>}</>
+                : <>{ address && address.lines && address.lines.map((aline, idx) => <span className={`addressline ${0 < idx ? 'notfirst' : ''}`} key={uuidv4()}>{aline}</span>)}
+                    {address && address.country && <span className={`countryline ${address.lines ? 'notfirst' : ''}`}>{address.country}</span>}</>
             }
-        </dd>{!address.lines && !address.country && <br />}
+        </dd>{(!address || (!address.lines && !address.country)) && <br />}
     </section>
 );
 
@@ -155,7 +152,7 @@ const saveButtonHandler = (person, editModeControlFunction, serviceCall) => {
     let bilLines = nullIfEmpty(document.getElementById('billing.lines').value.split('\n'));
     let bilCountry = nullIfEmpty(document.getElementById('billing.country').value);
 
-    let newPerson = buildPerson(person.id, lastname, firstnames, middlenames, dob, emailaddresses, phonedata, corLines, corCountry, bilLines, bilCountry);
+    let newPerson = buildPersonFromPerson(person.id, lastname, firstnames, middlenames, dob, emailaddresses, phonedata, corLines, corCountry, bilLines, bilCountry);
     serviceCall(newPerson, editModeControlFunction);
 
     // editModeControlFunction();
@@ -181,7 +178,7 @@ function collectPhoneData() {
     let num = document.getElementById('number.' + idx);
     while (ismobile && num) {
         if (num.value && num.value !== '') {
-            phoneData.push([ismobile.checked, num.value]);
+            phoneData.push({isMobile: ismobile.checked, number: num.value});
         }
         idx++;
         ismobile = document.getElementById('ismobile.' + idx);

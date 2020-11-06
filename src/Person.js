@@ -29,7 +29,11 @@ export let personComparator = (left, right) => {
     return leftName.localeCompare(rightName, 'en', { sensitivity: 'base', ignorePunctuation: true });
 };
 
-export const buildPerson = (id, lastname, firstnames = [], middlenames = [], dob = null, emailAddresses = [], phonedata = [], correspondenceAddressLines = [], correspondenceAddressCountry = '', billingAddressLines = [], billingAddressCountry = '', ageclass='ADULT') => {
+export const buildPerson = (lastname, firstnames = [], middlenames = [], dob = null, emailAddresses = [], phonedata = [], correspondenceAddressLines = [], correspondenceAddressCountry = '', billingAddressLines = [], billingAddressCountry = '') => 
+buildPersonFromPerson(null, lastname, firstnames, middlenames, dob, emailAddresses, phonedata, correspondenceAddressLines, correspondenceAddressCountry, billingAddressLines, billingAddressCountry);
+
+
+export const buildPersonFromPerson = (id, lastname, firstnames = [], middlenames = [], dob = null, emailAddresses = [], phonedata = [], correspondenceAddressLines = [], correspondenceAddressCountry = '', billingAddressLines = [], billingAddressCountry = '', ageclass = 'ADULT') => {
     return {
         id,
         lastname,
@@ -57,7 +61,7 @@ export const buildAddressObject = (lines, country) => {
 }
 
 export const toPhoneNumbers = (phoneDataList) => {
-    let phoneNumbers = phoneDataList.map(([isMob, num]) => { return { 'number': num, 'mobile': isMob }; });
+    let phoneNumbers = phoneDataList.map(({ isMobile, number }) => { return { 'number': number, 'mobile': isMobile }; });
     return (phoneNumbers.length === 0 ? null : phoneNumbers);
 
 }

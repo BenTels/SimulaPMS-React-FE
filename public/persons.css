@@ -78,11 +78,6 @@ h4.pers-id {
     margin-left: 20px;
 }
 
-h1.age-class {
-    position: relative;
-    top: -1.1em;
-}
-
 dt {
     float: left;
 }
@@ -166,5 +161,5 @@ dd {
 .person-button-pair {
     margin-left: 25em;
     position: relative;
-    top: -7em;
+    top: -3em;
 }
