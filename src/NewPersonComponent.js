@@ -11,49 +11,81 @@ import { Alert } from 'react-bootstrap';
 
 const RECORD_SEPARATOR = '\n';
 
+const createInitialFieldState = () => {
+    return {
+        lastname: '',
+        firstname: [],
+        middlename: [],
+        dob: undefined,
+        email: [],
+        phoneLines: [{ isMobile: true, number: '' }],
+        corLines: [],
+        corCountry: '',
+        baLines: [],
+        baCountry: ''
+    };
+};
+
 export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction }) => {
-    const [firstname, setFirstName] = useState([]);
-    const [middlename, setMiddleName] = useState([]);
-    const [lastname, setLastName] = useState('');
-    const [dob, setDOB] = useState(undefined);
-    const [email, setEmail] = useState([]);
-    const [corLines, setCORLines] = useState([]);
-    const [corCountry, setCORCountry] = useState('');
-    const [baLines, setBALines] = useState([]);
-    const [baCountry, setBACountry] = useState('');
-    const [phoneLines, setPhoneLines] = useState([{ isMobile: true, number: '' }]);
-    const [error, setError] = useState({show: false, text: ''});
+    const [fieldState, setFieldState] = useState(createInitialFieldState());
+    const [error, setError] = useState({ show: false, text: '' });
 
     const setPhoneIsMobile = (idx, isMobile) => {
-        let pL = Array.from(phoneLines);
+        let pL = Array.from(fieldState.phoneLines);
         pL[idx] = { isMobile, number: pL[idx].number };
-        setPhoneLines(pL);
+        setFieldState({ ...fieldState, phoneLines: pL });
     };
 
     const setPhoneNumber = (idx, number) => {
-        let pL = Array.from(phoneLines);
+        let pL = Array.from(fieldState.phoneLines);
         pL[idx] = { isMobile: pL[idx].isMobile, number };
-        setPhoneLines(pL);
+        setFieldState({ ...fieldState, phoneLines: pL });
     };
+
+    const updateFormState = (fieldname, val) => {
+        let newState = { ...fieldState };
+        newState[fieldname] = val;
+        setFieldState(newState);
+    }
+
+    const resetStateAndHandleClose = () => {
+        setFieldState(createInitialFieldState);
+        handleClose();
+    }
 
     const handleSave = (evt) => {
         evt.preventDefault();
-        let newPerson = buildPerson(lastname, firstname, middlename, dob, email, phoneLines, corLines, corCountry, baLines, baCountry);
-        addPersonServiceFunction(newPerson, handleClose, savingFailed);
+        let newPerson = buildPerson(fieldState.lastname,
+            fieldState.firstname,
+            fieldState.middlename,
+            fieldState.dob,
+            fieldState.email,
+            fieldState.phoneLines,
+            fieldState.corLines,
+            fieldState.corCountry,
+            fieldState.baLines,
+            fieldState.baCountry);
+        addPersonServiceFunction(newPerson, resetStateAndHandleClose, savingFailed);
     };
 
     const savingFailed = (errorObj) => {
         const err = `${errorObj.status} ${errorObj.error} - ${errorObj.message}`;
-        setError({show: true, text: err});
+        setError({ show: true, text: err });
     }
 
     const dismissError = () => {
-        setError({show: false, text: ''});
+        setError({ show: false, text: '' });
     }
 
     const splitToArray = (fieldString) => fieldString.split(RECORD_SEPARATOR);
 
-    const phoneBlock = phoneLines.map(({ isMobile, number }, idx) => (
+    const addButton = (evt) => {
+        let pL = Array.from(fieldState.phoneLines);
+        pL.push({ isMobile: true, number: '' });
+        setFieldState({ ...fieldState, phoneLines: pL });
+    }
+
+    const phoneBlock = fieldState.phoneLines.map(({ isMobile, number }, idx) => (
         <Row key={idx}>
             <Col>
                 <InputGroup>
@@ -62,6 +94,10 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction })
                     </InputGroup.Prepend>
                     <FormControl placeholder="Phone number" aria-label="Phone number" aria-describedby="isMobile" onChange={(evt) => setPhoneNumber(idx, evt.target.value)} defaultValue={number} />
                 </InputGroup>
+            </Col>
+            <Col xs={1}>
+                    { (idx === fieldState.phoneLines.length - 1  && fieldState.phoneLines[idx].number && fieldState.phoneLines[idx].number !== '') ? 
+                    <Button variant="secondary" onClick={addButton}>+</Button> : <></> }
             </Col>
         </Row>
     ));
@@ -89,7 +125,7 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction })
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id='firstname'>First name(s)</InputGroup.Text>
                                     </InputGroup.Prepend>
-                                    <FormControl as="textarea" placeholder="First name(s)" aria-label="First name" aria-describedby="firstname" onChange={(evt) => setFirstName(splitToArray(evt.target.value))} />
+                                    <FormControl as="textarea" placeholder="First name(s)" aria-label="First name" aria-describedby="firstname" onChange={(evt) => updateFormState('firstname', splitToArray(evt.target.value))} />
                                 </InputGroup>
                             </Col>
                         </Row>
@@ -99,7 +135,7 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction })
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id='middlename'>Middle names</InputGroup.Text>
                                     </InputGroup.Prepend>
-                                    <FormControl as="textarea" placeholder="Middle name(s)" aria-label="Middle name" aria-describedby="middlename" onChange={(evt) => setMiddleName(splitToArray(evt.target.value))} />
+                                    <FormControl as="textarea" placeholder="Middle name(s)" aria-label="Middle name" aria-describedby="middlename" onChange={(evt) => updateFormState('middlename', splitToArray(evt.target.value))} />
                                 </InputGroup>
                             </Col>
                         </Row>
@@ -109,7 +145,7 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction })
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id='lastname'>Last name *</InputGroup.Text>
                                     </InputGroup.Prepend>
-                                    <FormControl placeholder="Last name" aria-label="Last name" aria-describedby="lastname" onChange={(evt) => setLastName(evt.target.value)} />
+                                    <FormControl placeholder="Last name" aria-label="Last name" aria-describedby="lastname" onChange={(evt) => updateFormState('lastname', evt.target.value)} />
                                 </InputGroup>
                             </Col>
                         </Row>
@@ -119,7 +155,7 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction })
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id='dob'>Date of birth</InputGroup.Text>
                                     </InputGroup.Prepend>
-                                    <FormControl placeholder="yyyy-mm-dd" aria-label="Date of birth" aria-describedby="dob" onChange={(evt) => setDOB(evt.target.value)} />
+                                    <FormControl placeholder="yyyy-mm-dd" aria-label="Date of birth" aria-describedby="dob" onChange={(evt) => updateFormState('dob', evt.target.value)} />
                                 </InputGroup>
                             </Col>
                         </Row>
@@ -130,7 +166,7 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction })
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id='email'>Email address(es)</InputGroup.Text>
                                     </InputGroup.Prepend>
-                                    <FormControl as="textarea" placeholder="Email address(es)" aria-label="Email Address(es)" aria-describedby="email" onChange={(evt) => setEmail(splitToArray(evt.target.value))} />
+                                    <FormControl as="textarea" placeholder="Email address(es)" aria-label="Email Address(es)" aria-describedby="email" onChange={(evt) => updateFormState('email', splitToArray(evt.target.value))} />
                                 </InputGroup>
                             </Col>
                         </Row>
@@ -146,7 +182,7 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction })
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id='corLines'>Correspondence address</InputGroup.Text>
                                     </InputGroup.Prepend>
-                                    <FormControl as="textarea" placeholder="Correspondence address lines" aria-label="Correspondence Address" aria-describedby="corLines" onChange={(evt) => setCORLines(splitToArray(evt.target.value))} />
+                                    <FormControl as="textarea" placeholder="Correspondence address lines" aria-label="Correspondence Address" aria-describedby="corLines" onChange={(evt) => updateFormState('corLines', splitToArray(evt.target.value))} />
                                 </InputGroup>
                             </Col>
                         </Row>
@@ -156,7 +192,7 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction })
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id='corCountry'>Correspondence address country</InputGroup.Text>
                                     </InputGroup.Prepend>
-                                    <FormControl placeholder="Correspondence address lines" aria-label="Correspondence address country" aria-describedby="corCountry" onChange={(evt) => setCORCountry(evt.target.value)} />
+                                    <FormControl placeholder="Correspondence address lines" aria-label="Correspondence address country" aria-describedby="corCountry" onChange={(evt) => updateFormState('corCountry', evt.target.value)} />
                                 </InputGroup>
                             </Col>
                         </Row>
@@ -167,7 +203,7 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction })
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id='baLines'>Billing address</InputGroup.Text>
                                     </InputGroup.Prepend>
-                                    <FormControl as="textarea" placeholder="Billing address lines" aria-label="Billing Address" aria-describedby="baLines" onChange={(evt) => setBALines(splitToArray(evt.target.value))} />
+                                    <FormControl as="textarea" placeholder="Billing address lines" aria-label="Billing Address" aria-describedby="baLines" onChange={(evt) => updateFormState('baLines', splitToArray(evt.target.value))} />
                                 </InputGroup>
                             </Col>
                         </Row>
@@ -177,7 +213,7 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction })
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id='baCountry'>Billing address country</InputGroup.Text>
                                     </InputGroup.Prepend>
-                                    <FormControl placeholder="Billing address lines" aria-label="Billing address country" aria-describedby="baCountry" onChange={(evt) => setBACountry(evt.target.value)} />
+                                    <FormControl placeholder="Billing address lines" aria-label="Billing address country" aria-describedby="baCountry" onChange={(evt) => updateFormState('baCountry', evt.target.value)} />
                                 </InputGroup>
                             </Col>
                         </Row>
@@ -185,7 +221,7 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction })
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="primary" onClick={handleSave}>Save</Button>
-                    <Button variant="secondary" onClick={handleClose}>Cancel</Button>
+                    <Button variant="secondary" onClick={resetStateAndHandleClose}>Cancel</Button>
                 </Modal.Footer>
             </Modal>
         </>
