@@ -75,7 +75,7 @@ let PersonContact = (props) => (
                     </>
                 }
             </dd>{!props.person.phonenumbers && <br />}
-            {props.person.mainCorrespondenceAddress && <PersonAddress address={props.person.mainCorrespondenceAddress} isEditing={props.isEditing} addressType={'correspondence'} />}
+            {(props.person.mainCorrespondenceAddress || props.isEditing) && <PersonAddress address={props.person.mainCorrespondenceAddress} isEditing={props.isEditing} addressType={'correspondence'} />}
         </dl>
     </section>
 );
