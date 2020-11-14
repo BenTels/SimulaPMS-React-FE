@@ -15,7 +15,8 @@ export let PersonSelection = (props) => {
                     <ul>
                         {props.personData.persons
                             .sort(personComparator)
-                            .map(pers => <li key={pers.id}><a href={pers.id} onClick={props.personData.selectPersonClickHandler}>{toLastNameAndInitials(pers)}</a></li>)}
+                            .map(pers => <li key={pers.id}><a href={pers.id} onClick={props.personData.selectPersonClickHandler}>{toLastNameAndInitials(pers)}</a></li>)
+                        }
                     </ul>
 
                 );

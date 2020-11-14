@@ -153,9 +153,9 @@ const saveButtonHandler = (person, editModeControlFunction, serviceCall) => {
     let bilCountry = nullIfEmpty(document.getElementById('billing.country').value);
 
     let newPerson = buildPersonFromPerson(person.id, lastname, firstnames, middlenames, dob, emailaddresses, phonedata, corLines, corCountry, bilLines, bilCountry);
-    serviceCall(newPerson, editModeControlFunction);
+    editModeControlFunction();
+    serviceCall(newPerson);
 
-    // editModeControlFunction();
 };
 
 function nullIfEmpty(obj) {
