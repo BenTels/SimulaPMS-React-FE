@@ -17,6 +17,21 @@ export class Person {
         readonly billingAddress: NullableAddress = null
     ) {}
 
+    static fromObject({id, lastname, firstnames, middlenames, dob, ageclass, emailaddresses, phonenumbers,
+        mainCorrespondenceAddress, billingAddress}:
+        {id: string,
+        lastname : string,
+        firstnames? : string[],
+        middlenames?: string[],
+        dob?: NullableString,
+        ageclass? : AgeClassType,
+        emailaddresses?: string[],
+        phonenumbers?: PhoneNumber[] | null,
+        mainCorrespondenceAddress?: NullableAddress,
+        billingAddress?: NullableAddress}) : Person {
+            return new Person(id, lastname, firstnames, middlenames, dob, ageclass, emailaddresses, phonenumbers, mainCorrespondenceAddress, billingAddress);
+        }
+
     static fromPerson(id: string, lastname: string, 
         firstnames: string[] = [], middlenames: string[] = [], 
         dob: NullableString = null, 
