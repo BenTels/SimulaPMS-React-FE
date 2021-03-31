@@ -1,10 +1,15 @@
+import { Person } from "../Domain/Person";
+
 const SERVICE_ENDPOINT = 'http://localhost:8080/persons';
 
 export const PERSON_STATE_LOADING = 'loading', PERSON_STATE_LOADED = 'loaded', PERSON_STATE_ERROR = 'error';
 export const PERSON_REDUCER_TOKEN_INIT = 'PERSON_FETCH_INIT', PERSON_REDUCER_TOKEN_FETCHED = 'PERSON_FETCH_SUCCEEDED', PERSON_REDUCER_TOKEN_FAILED = 'PERSON_FETCH_FAILED', PERSON_REDUCER_TOKEN_REMOVED = 'PERSON_REMOVED', PERSON_REDUCER_TOKEN_UPDATED = 'PERSON_UPDATED', PERSON_REDUCER_TOKEN_ADDED = 'PERSON_ADDED';
 export const PERSON_INITIAL_STATE = { data: [], loadState: PERSON_STATE_LOADING};
 
-export const personReducer = (state, action) => {
+export type StateType = {data: Person[], loadState: string};
+export type ActionType = {type: string, payload: any};
+
+export const personReducer = (state : StateType, action : ActionType) : StateType => {
     switch (action.type) {
         case PERSON_REDUCER_TOKEN_INIT:
             return {
@@ -108,17 +113,20 @@ export const updatePersonInListGenerator = (onSuccessCallback) => {
     }
 }
 
-export const getPersonsList = (dispatchPerson, activeFilter) => {
+export const getPersonsList = (dispatchPerson: any, activeFilter: string): void => {
     fetch(SERVICE_ENDPOINT + (activeFilter ? '?searchTerm=' + activeFilter : ''))
         .then(response => response.json())
+        .then(json => JSON.parse(json))
+        .then((obs : any[]) => obs.map(o => Person.fromObject(o)))
         .then(result => dispatchPerson({ type: PERSON_REDUCER_TOKEN_FETCHED, payload: result }))
         .catch((reason) => dispatchPerson({ type: PERSON_REDUCER_TOKEN_FAILED }));
 }
 
-export const getPerson = (uri, callbackOnSuccess) => {
+export const getPerson = (uri: string, callbackOnSuccess: (p:Person) => void) : void => {
     fetch( new Request(uri, { method: 'GET' }))
-        .then(response => response.json())
-        .then(result => { 
+        .then((response: Response) => response.json())
+        .then((json: string) => Person.fromJSON(json))
+        .then((result: Person) => { 
             if (callbackOnSuccess) {
                 callbackOnSuccess(result);
             }
