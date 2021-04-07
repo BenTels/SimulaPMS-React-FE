@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { MouseEvent, useState } from 'react';
 import {NewPersonDialog} from './NewPersonComponent';
 
-export let Header = ({filterText, filterChangedHandler, addPersonServiceFunction}) => {
+export let Header = ({filterText, filterChangedHandler, addPersonServiceFunction} : 
+        {filterText:string, filterChangedHandler: any, addPersonServiceFunction: any}) => {
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
-    const addPersonClickHandler = (evt) => {
+    const addPersonClickHandler = (evt:MouseEvent) => {
         evt.preventDefault();
         setShow(true);
     }

@@ -1,12 +1,13 @@
+import IonIcon from '@reacticons/ionicons';
 import React, { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { lastNameWithCommaIfNecessary, nameToInitial, buildPersonFromPerson } from './Person'
+import { Person } from './Person/Domain/Person'
 
-export let PersonDisplay = ({ person, removeHandler, updateHandler }) => {
+export let PersonDisplay = ({ person, removeHandler, updateHandler }: {person?: Person, removeHandler?: any, updateHandler?: any}) => {
 
     const [isEditing, setEditing] = useState(false);
 
-    const switchEditMode = () => setEditing(!isEditing);
+    const switchEditMode: ()=>void = () => setEditing(!isEditing);
 
     useEffect(() => setEditing(false), [person]);
 
@@ -28,11 +29,11 @@ export let PersonDisplay = ({ person, removeHandler, updateHandler }) => {
     } else return (<main />)
 };
 
-let PersonHeader = ({ person, removePersonHandler, isEditing, buttonHandler, updatePersonHandler }) => (
+let PersonHeader = ({ person, removePersonHandler, isEditing, buttonHandler, updatePersonHandler } : { person: Person, removePersonHandler: any, isEditing: boolean, buttonHandler: any, updatePersonHandler: any }) => (
     <div>
-        <h1 className="lastname">{lastNameWithCommaIfNecessary(person) + '\u00A0'}</h1>
-        {person.firstnames && person.firstnames.map(fn => <h2 className="initials" key={uuidv4()}>{nameToInitial(fn)}</h2>)}
-        {person.middlenames && person.middlenames.map(mn => <h2 className="initials" key={uuidv4()}>{nameToInitial(mn)}</h2>)}
+        <h1 className="lastname">{person.lastNameWithCommaIfNecessary() + '\u00A0'}</h1>
+        {person.firstnames && person.firstnames.map(fn => <h2 className="initials" key={uuidv4()}>{person.nameToInitial(fn)}</h2>)}
+        {person.middlenames && person.middlenames.map(mn => <h2 className="initials" key={uuidv4()}>{person.nameToInitial(mn)}</h2>)}
         <h4 className="pers-id">({person.id})</h4>
         <h1 className="age-class">{person.ageclass}</h1>
         {isEditing ?
@@ -44,7 +45,7 @@ let PersonHeader = ({ person, removePersonHandler, isEditing, buttonHandler, upd
     </div>
 );
 
-let PersonNames = (props) => (
+let PersonNames = (props: any) => (
     <section title="Name" className="namesection">
         <dl>
             <ListDefinition list={props.person.firstnames} classId={'firstname'} term={'First name(s):'} isEditing={props.isEditing} />
@@ -55,23 +56,23 @@ let PersonNames = (props) => (
     </section>
 );
 
-let PersonContact = (props) => (
+let PersonContact = (props: any) => (
     <section title="Communication" className="communication">
         <dl>
-            <ListDefinition list={props.person.emailaddresses} classId={'email'} term={'Email address(es):'} isEditing={props.isEditing}><ion-icon name="mail-sharp"></ion-icon></ListDefinition>
+            <ListDefinition list={props.person.emailaddresses} classId={'email'} term={'Email address(es):'} isEditing={props.isEditing}><IonIcon name="mail-sharp"></IonIcon></ListDefinition>
             <dt>Phone number(s):</dt>
             <dd>
                 {props.isEditing ?
                     <>
                         {props.person.phonenumbers &&
-                            props.person.phonenumbers.map((phn, idx) =>
+                            props.person.phonenumbers.map((phn: any, idx: any) =>
                                 <span key={uuidv4()}><input type="checkbox" defaultChecked={phn.mobile} id={`ismobile.${idx}`} /> <input id={`number.${idx}`} defaultValue={phn.number} /></span>)}
                         {!props.person.phonenumbers &&
-                            <span key={uuidv4()}><input type="checkbox" defaultChecked="true" id='ismobile.0' /> <input id='number.0' defaultValue="" /></span>}
+                            <span key={uuidv4()}><input type="checkbox" defaultChecked={true} id='ismobile.0' /> <input id='number.0' defaultValue="" /></span>}
                     </>
                     : <>{props.person.phonenumbers &&
-                        props.person.phonenumbers.map((phn, idx) =>
-                            <span className={`phone ${0 < idx ? 'notfirst' : ''}`} key={uuidv4()}>{phn.mobile ? <ion-icon name="phone-portrait-sharp"></ion-icon> : <ion-icon name="call-sharp"></ion-icon>} {phn.number}</span>)}
+                        props.person.phonenumbers.map((phn:any, idx:any) =>
+                            <span className={`phone ${0 < idx ? 'notfirst' : ''}`} key={uuidv4()}>{phn.mobile ? <IonIcon name="phone-portrait-sharp"></IonIcon> : <IonIcon name="call-sharp"></IonIcon>} {phn.number}</span>)}
                     </>
                 }
             </dd>{!props.person.phonenumbers && <br />}
@@ -80,7 +81,7 @@ let PersonContact = (props) => (
     </section>
 );
 
-let PersonAddress = ({ address, addressType, isEditing, copied }) => (
+let PersonAddress = ({ address, addressType, isEditing, copied }: { address: any, addressType: any, isEditing: boolean, copied?: boolean }) => (
     <section>
         <dt>Address:</dt>
         <dd>
@@ -88,21 +89,21 @@ let PersonAddress = ({ address, addressType, isEditing, copied }) => (
                 <>{<textarea id={`${`${addressType}`}.lines`} defaultValue={copied || !address || !address.lines ? '' : address.lines.join('\n')} />}
                     <input id={`${`${addressType}`}.country`} defaultValue={copied || !address || !address.country ? '' : address.country} />
                 </>
-                : <>{ address && address.lines && address.lines.map((aline, idx) => <span className={`addressline ${0 < idx ? 'notfirst' : ''}`} key={uuidv4()}>{aline}</span>)}
+                : <>{ address && address.lines && address.lines.map((aline: string, idx: number) => <span className={`addressline ${0 < idx ? 'notfirst' : ''}`} key={uuidv4()}>{aline}</span>)}
                     {address && address.country && <span className={`countryline ${address.lines ? 'notfirst' : ''}`}>{address.country}</span>}</>
             }
         </dd>{(!address || (!address.lines && !address.country)) && <br />}
     </section>
 );
 
-let PersonBillingAddress = (props) => (
+let PersonBillingAddress = (props: any) => (
     <section title="Billing address" className="billing">
         <dl>
             <dt>Same as correspondence address:</dt>
             <dd>
                 {props.billing ?
-                    <span><ion-icon name="close-circle-sharp"></ion-icon> No</span>
-                    : <span><ion-icon name="checkbox-sharp"></ion-icon> Yes</span>
+                    <span><IonIcon name="close-circle-sharp"></IonIcon> No</span>
+                    : <span><IonIcon name="checkbox-sharp"></IonIcon> Yes</span>
                 }
             </dd>
             {props.billing ?
@@ -113,7 +114,7 @@ let PersonBillingAddress = (props) => (
     </section>
 );
 
-let SimpleDefinition = ({ item, classId, term, isEditing }) => (
+let SimpleDefinition = ({ item, classId, term, isEditing }: { item: any, classId: string, term: string, isEditing: boolean }) => (
     <>
         <dt>{term}</dt>
         <dd>
@@ -126,40 +127,59 @@ let SimpleDefinition = ({ item, classId, term, isEditing }) => (
     </>
 );
 
-let ListDefinition = ({ list, classId, term, isEditing, children }) => (
+let ListDefinition = ({ list, classId, term, isEditing, children }: { list: any, classId: string, term: string, isEditing: boolean, children?: any }) => (
     <>
         <dt>{term}</dt>
         <dd>
             {isEditing ?
                 <span>{<textarea id={classId} defaultValue={(list && list.join('\n')) || ''} />}</span>
-                : <>{list && list.map((fn, idx) => <span className={`${classId} ${0 < idx ? 'notfirst' : ''}`} key={uuidv4()}>{children} {fn}</span>)}</>
+                : <>{list && list.map((fn: any, idx: number) => <span className={`${classId} ${0 < idx ? 'notfirst' : ''}`} key={uuidv4()}>{children} {fn}</span>)}</>
             }
         </dd>
         {!list && <br />}
     </>
 );
 
-const saveButtonHandler = (person, editModeControlFunction, serviceCall) => {
-    let firstnames = nullIfEmpty(document.getElementById('firstname').value.split('\n'));
-    let middlenames = nullIfEmpty(document.getElementById('middlename').value.split('\n'));
-    let newLastName = document.getElementById('lastname').value;
-    let lastname = (newLastName !== '' ? newLastName : person.lastname);
-    let dob = nullIfEmpty(document.getElementById('dob').value);
-    let emailaddresses = nullIfEmpty(document.getElementById('email').value.split('\n'));
-    let phonedata = collectPhoneData();
-    let corLines = nullIfEmpty(document.getElementById('correspondence.lines').value.split('\n'));
-    let corCountry = nullIfEmpty(document.getElementById('correspondence.country').value);
-    let bilLines = nullIfEmpty(document.getElementById('billing.lines').value.split('\n'));
-    let bilCountry = nullIfEmpty(document.getElementById('billing.country').value);
+const saveButtonHandler = (person: Person, editModeControlFunction: any, serviceCall: any) => {
+    const doc: Document = document!;
+    
+    const fname: any = doc.getElementById('firstname')!;
+    const mname: any = doc.getElementById('middlename')!;
+    const lname: any = doc.getElementById('lastname')!;
+    const dobe: any = doc.getElementById('dob')!;
+    const email: any = doc.getElementById('email')!;
+    const corlines: any = doc.getElementById('correspondence.lines')!;
+    const corc: any = doc.getElementById('correspondence.country')!;
+    const billines: any = doc.getElementById('billing.lines')!;
+    const bilc: any = doc.getElementById('billing.country')!;
 
-    let newPerson = buildPersonFromPerson(person.id, lastname, firstnames, middlenames, dob, emailaddresses, phonedata, corLines, corCountry, bilLines, bilCountry);
+    let firstnames: string[] | undefined = nullIfEmptyArray(fname.value.split('\n'));
+    let middlenames = nullIfEmptyArray(mname.value.split('\n'));
+    let newLastName = lname.value;
+    let lastname = (newLastName !== '' ? newLastName : person.lastname);
+    let dob = nullIfEmptyString(dobe.value);
+    let emailaddresses = nullIfEmptyArray(email.value.split('\n'));
+    let phonedata = collectPhoneData();
+    let corLines = nullIfEmptyArray(corlines.value.split('\n'));
+    let corCountry = nullIfEmptyString(corc.value);
+    let bilLines = nullIfEmptyArray(billines.value.split('\n'));
+    let bilCountry = nullIfEmptyString(bilc.value);
+
+    let newPerson = Person.fromPerson(person.id, lastname, firstnames, middlenames, dob, emailaddresses, phonedata, corLines, corCountry, bilLines, bilCountry);
     editModeControlFunction();
     serviceCall(newPerson);
 
 };
 
-function nullIfEmpty(obj) {
-    if (obj === '' || obj === []) {
+function nullIfEmptyString(obj: string): string | undefined {
+    if (obj === '') {
+        return undefined;
+    }
+    return obj;
+}
+
+function nullIfEmptyArray(obj: Array<string>): Array<string> | undefined {
+    if (obj === []) {
         return undefined;
     }
     if (Array.isArray(obj)) {
@@ -174,8 +194,8 @@ function nullIfEmpty(obj) {
 function collectPhoneData() {
     const phoneData = [];
     let idx = 0;
-    let ismobile = document.getElementById('ismobile.' + idx);
-    let num = document.getElementById('number.' + idx);
+    let ismobile: any = document.getElementById('ismobile.' + idx);
+    let num: any = document.getElementById('number.' + idx)!;
     while (ismobile && num) {
         if (num.value && num.value !== '') {
             phoneData.push({isMobile: ismobile.checked, number: num.value});

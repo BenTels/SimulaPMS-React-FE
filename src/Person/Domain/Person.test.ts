@@ -45,7 +45,8 @@ test('Marshalling to and unmarshalling from JSON',
         const strPerson: string = person.toJSONString();
         // console.log(strPerson);
 
-        let unmarshalledPerson = Person.fromJSON(strPerson);
+        // let unmarshalledPerson = 
+        Person.fromJSON(strPerson);
         // console.log(unmarshalledPerson);
     }
 );

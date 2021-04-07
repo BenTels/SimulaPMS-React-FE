@@ -58,11 +58,10 @@ export class PersonsService {
    static getPersonsList = (dispatchPerson: (a:ActionType) => void, activeFilter?: string): void => {
         fetch(PersonsService.SERVICE_ENDPOINT + (activeFilter ? '?searchTerm=' + activeFilter : ''))
             .then(response => response.json())
-            .then(json => JSON.parse(json))
             .then((obs: any[]) => obs.map(o => Person.fromObject(o)))
             .then((persons: Person[]) => { persons.forEach(p => console.log(p)); return persons;})
             .then(result => dispatchPerson({ type: PERSON_REDUCER_TOKEN_FETCHED, payload: result }))
-            .catch((reason) => dispatchPerson({ type: PERSON_REDUCER_TOKEN_FAILED }));
+            .catch((reason) => { console.log(reason); dispatchPerson({ type: PERSON_REDUCER_TOKEN_FAILED }) });
     }
     
     static getPerson = (uri: string, callbackOnSuccess: (p: Person) => void): void => {

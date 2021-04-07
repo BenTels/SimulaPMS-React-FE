@@ -1,4 +1,4 @@
-import { Address, NullableAddress } from "./Address";
+import { Address } from "./Address";
 import { PhoneNumber, PhoneNumberData } from "./PhoneNumber";
 import { AgeClassType, NullableString } from "./Types";
 
@@ -12,9 +12,9 @@ export class Person {
         readonly dob: NullableString = null,
         readonly ageclass : AgeClassType = null,
         readonly emailaddresses: string[] = [],
-        readonly phonenumbers: PhoneNumber[] | null = null,
-        readonly mainCorrespondenceAddress: NullableAddress = null,
-        readonly billingAddress: NullableAddress = null
+        readonly phonenumbers: PhoneNumber[] = [],
+        readonly mainCorrespondenceAddress: Address = Address.EMPTY_ADDRESS,
+        readonly billingAddress: Address = Address.EMPTY_ADDRESS
     ) {}
 
     static fromObject({id, lastname, firstnames, middlenames, dob, ageclass, emailaddresses, phonenumbers,
@@ -27,9 +27,9 @@ export class Person {
         ageclass? : AgeClassType,
         emailaddresses?: string[],
         phonenumbers?: PhoneNumber[] | null,
-        mainCorrespondenceAddress?: NullableAddress,
-        billingAddress?: NullableAddress}) : Person {
-            return new Person(id, lastname, firstnames, middlenames, dob, ageclass, emailaddresses, phonenumbers, mainCorrespondenceAddress, billingAddress);
+        mainCorrespondenceAddress?: Address,
+        billingAddress?: Address}) : Person {
+            return new Person(id, lastname, firstnames, middlenames, dob, ageclass, emailaddresses, phonenumbers ? phonenumbers : [], mainCorrespondenceAddress, billingAddress);
         }
 
     static fromPerson(id: string, lastname: string, 
@@ -97,10 +97,10 @@ export class Person {
         if (this.phonenumbers && 0 < this.phonenumbers.length) {
             obj.phonenumbers = this.phonenumbers;
         }
-        if (this.mainCorrespondenceAddress) {
+        if (this.mainCorrespondenceAddress && this.mainCorrespondenceAddress !== Address.EMPTY_ADDRESS) {
             obj.mainCorrespondenceAddress = this.mainCorrespondenceAddress;
         }
-        if (this.billingAddress) {
+        if (this.billingAddress && this.billingAddress !== Address.EMPTY_ADDRESS) {
             obj.billingAddress = this.billingAddress;
         }
         return obj;
@@ -113,7 +113,7 @@ export class Person {
         return name;
     }
     
-    private lastNameWithCommaIfNecessary() {
+    lastNameWithCommaIfNecessary() {
         let name = this.lastname;
         if (this.hasSomeFirstOrMiddleNames()) {
             name += ',';
@@ -135,6 +135,12 @@ export class Person {
         return name;
     }
     
-    private nameToInitial = (name: string | null) => name && name !== '' ? ' ' + name.charAt(0) + '.' : '';
+    nameToInitial = (name: string | null) => name && name !== '' ? ' ' + name.charAt(0) + '.' : '';
 
+    static personComparator = (left: Person, right: Person) : number => {
+        let leftName = left.toLastNameAndInitials();
+        let rightName = right.toLastNameAndInitials();
+        return leftName.localeCompare(rightName, 'en', { sensitivity: 'base', ignorePunctuation: true });
+    };
+    
 }

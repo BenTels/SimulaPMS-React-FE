@@ -1,8 +1,8 @@
 import React from 'react';
-import { toLastNameAndInitials, personComparator } from './Person'
-import { PERSON_STATE_LOADING, PERSON_STATE_ERROR, PERSON_STATE_LOADED } from './PersonsServiceConnector'
+import { Person } from './Person/Domain/Person'
+import { PERSON_STATE_LOADING, PERSON_STATE_ERROR, PERSON_STATE_LOADED } from './Person/Service/PersonsService'
 
-export let PersonSelection = (props) => {
+export let PersonSelection = (props: any) => {
     let caseContent = () => {
         switch (props.personData.loadState) {
             case PERSON_STATE_LOADING:
@@ -14,8 +14,8 @@ export let PersonSelection = (props) => {
                 return (
                     <ul>
                         {props.personData.persons
-                            .sort(personComparator)
-                            .map(pers => <li key={pers.id}><a href={pers.id} onClick={props.personData.selectPersonClickHandler}>{toLastNameAndInitials(pers)}</a></li>)
+                            .sort(Person.personComparator)
+                            .map((pers: Person) => <li key={pers.id}><a href={pers.id} onClick={props.personData.selectPersonClickHandler}>{pers.toLastNameAndInitials()}</a></li>)
                         }
                     </ul>
 

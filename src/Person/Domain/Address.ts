@@ -1,4 +1,7 @@
 export class Address {
+
+    static EMPTY_ADDRESS: Address = new Address('');
+
     constructor(readonly country: string, readonly lines?: string[]){};
 
     copy({newCountry, newLines} : {newCountry?: string, newLines?: string[]} = {}) : Address {
@@ -11,5 +14,3 @@ export class Address {
         );
     }
 }
-
-export type NullableAddress = Address | null;

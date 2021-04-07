@@ -1,5 +1,3 @@
-import { type } from "node:os";
-
 export type PhoneNumberData = {isMobile : boolean, number: string};
 
 export class PhoneNumber {
@@ -23,9 +21,9 @@ export class PhoneNumber {
         return equals;
     }
 
-    static fromElementMap = (phoneDataList : PhoneNumberData[]) : (PhoneNumber[] | null) => {
+    static fromElementMap = (phoneDataList : PhoneNumberData[]) : PhoneNumber[] => {
         let phoneNumbers : PhoneNumber[] = phoneDataList.map(({ isMobile, number }: {isMobile : boolean, number : string}) => { return new PhoneNumber(number, isMobile); });
-        return (phoneNumbers.length === 0 ? null : phoneNumbers);
+        return (phoneNumbers.length === 0 ? [] : phoneNumbers);
     
     }
 }
