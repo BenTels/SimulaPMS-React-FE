@@ -1,11 +1,15 @@
 import IonIcon from '@reacticons/ionicons';
 import React, { useEffect, useState } from 'react';
+import { Button, Col, Container, Form, ListGroup, Row } from 'react-bootstrap';
 import { v4 as uuidv4 } from 'uuid';
 import { Person } from './Person/Domain/Person'
 
-export let PersonDisplay = ({ person, removeHandler, updateHandler }: {person?: Person, removeHandler?: any, updateHandler?: any}) => {
+export let PersonDisplay = ({ person, removeHandler, updateHandler }: 
+    {person?: Person | null | undefined, 
+    removeHandler: (p:Person) => void, 
+    updateHandler: (p:Person) => void}) => {
 
-    const [isEditing, setEditing] = useState(false);
+    const [isEditing, setEditing] = useState<boolean>(false);
 
     const switchEditMode: ()=>void = () => setEditing(!isEditing);
 
@@ -15,44 +19,61 @@ export let PersonDisplay = ({ person, removeHandler, updateHandler }: {person?: 
         return (
             <main>
                 <PersonHeader person={person} removePersonHandler={removeHandler} isEditing={isEditing} buttonHandler={switchEditMode} updatePersonHandler={updateHandler} />
-                {isEditing ? <form>
-                    <PersonNames person={person} isEditing={isEditing} />
-                    <PersonContact person={person} isEditing={isEditing} />
-                    <PersonBillingAddress billing={person.billingAddress} main={person.mainCorrespondenceAddress} isEditing={isEditing} />
-                </form>
-                    : <><PersonNames person={person} isEditing={isEditing} />
+                {isEditing ? 
+                    <Form>
+                        <PersonNames person={person} isEditing={isEditing} />
                         <PersonContact person={person} isEditing={isEditing} />
-                        <PersonBillingAddress billing={person.billingAddress} main={person.mainCorrespondenceAddress} isEditing={isEditing} /></>
+                        <PersonBillingAddress billing={person.billingAddress} main={person.mainCorrespondenceAddress} isEditing={isEditing} />
+                    </Form>
+                    : 
+                    <Container>
+                        <PersonNames person={person} isEditing={isEditing} />
+                        <PersonContact person={person} isEditing={isEditing} />
+                        <PersonBillingAddress billing={person.billingAddress} main={person.mainCorrespondenceAddress} isEditing={isEditing} />
+                    </Container>
                 }
             </main>
         )
     } else return (<main />)
 };
 
-let PersonHeader = ({ person, removePersonHandler, isEditing, buttonHandler, updatePersonHandler } : { person: Person, removePersonHandler: any, isEditing: boolean, buttonHandler: any, updatePersonHandler: any }) => (
-    <div>
-        <h1 className="lastname">{person.lastNameWithCommaIfNecessary() + '\u00A0'}</h1>
-        {person.firstnames && person.firstnames.map(fn => <h2 className="initials" key={uuidv4()}>{person.nameToInitial(fn)}</h2>)}
-        {person.middlenames && person.middlenames.map(mn => <h2 className="initials" key={uuidv4()}>{person.nameToInitial(mn)}</h2>)}
-        <h4 className="pers-id">({person.id})</h4>
-        <h1 className="age-class">{person.ageclass}</h1>
+let PersonHeader = ({ person, removePersonHandler, isEditing, buttonHandler, updatePersonHandler } : 
+    { person: Person, 
+      removePersonHandler: (p:Person) => void, 
+      isEditing: boolean, 
+      buttonHandler: ()=>void, 
+      updatePersonHandler: (p:Person) => void }) => (
+
+    <Container>
+        <Row className="lastname">
+            <Col md="auto" className='personname'>{person.toLastNameAndInitials()}</Col>
+            <Col md="auto" className='pers-age'>{person.ageclass}</Col>
+        </Row>
+        <Row>
+            <Col md="auto" className='pers-id'>{person.id}</Col>
+        </Row>
+        <Row>
         {isEditing ?
-            <span className="person-button-pair"><button value="Save" onClick={() => saveButtonHandler(person, buttonHandler, updatePersonHandler)}>Save</button>
-                <button value="Cancel" onClick={() => buttonHandler()}>Cancel</button></span>
-            : <span className="person-button-pair"><button value="Edit" className="edit-person-button" onClick={() => buttonHandler()}>Edit</button>
-                <button value="Delete" onClick={() => removePersonHandler(person)}>Delete</button></span>
+            <>
+            <Col md="auto"><Button value='Save' onClick={() => saveButtonHandler(person, buttonHandler, updatePersonHandler)}>Save</Button></Col>
+            <Col md="auto"><Button value='Cancel' onClick={() => buttonHandler()}>Cancel</Button></Col>
+            </>
+            :
+            <>
+            <Col md="auto"><Button value='Edit' onClick={() => buttonHandler()}>Edit</Button></Col>
+            <Col md="auto"><Button value='Delete' onClick={() => removePersonHandler(person)}>Delete</Button></Col>
+            </>
         }
-    </div>
+        </Row>
+    </Container>
 );
 
 let PersonNames = (props: any) => (
     <section title="Name" className="namesection">
-        <dl>
-            <ListDefinition list={props.person.firstnames} classId={'firstname'} term={'First name(s):'} isEditing={props.isEditing} />
-            <ListDefinition list={props.person.middlenames} classId={'middlename'} term={'Middle name(s):'} isEditing={props.isEditing} />
-            <SimpleDefinition item={props.person.lastname} classId={'lastname'} term={'Last name:'} isEditing={props.isEditing} />
-            <SimpleDefinition item={props.person.dob} classId={'dob'} term={'Date of birth:'} isEditing={props.isEditing} />
-        </dl>
+        <ListDefinition list={props.person.firstnames} classId={'firstname'} term={'First name(s):'} isEditing={props.isEditing} />
+        <ListDefinition list={props.person.middlenames} classId={'middlename'} term={'Middle name(s):'} isEditing={props.isEditing} />
+        <SimpleDefinition item={props.person.lastname} classId={'lastname'} term={'Last name:'} isEditing={props.isEditing} />
+        <SimpleDefinition item={props.person.dob} classId={'dob'} term={'Date of birth:'} isEditing={props.isEditing} />
     </section>
 );
 
@@ -114,31 +135,53 @@ let PersonBillingAddress = (props: any) => (
     </section>
 );
 
-let SimpleDefinition = ({ item, classId, term, isEditing }: { item: any, classId: string, term: string, isEditing: boolean }) => (
-    <>
-        <dt>{term}</dt>
-        <dd>
-            {isEditing ?
-                <span className={classId}><input id={classId} defaultValue={item} /></span>
-                : <span className={classId}>{item}</span>
-            }
-        </dd>
-        {!item && <br />}
-    </>
-);
+let SimpleDefinition = ({ item, classId, term, isEditing }: { item: any, classId: string, term: string, isEditing: boolean }) => {
+    return (<>
+    {isEditing ? 
+        <Form.Row>
+            <Form.Group controlId={term}>
+                <Col><Form.Label>{term}</Form.Label></Col>
+                <Col><Form.Control type="input" placeholder={term} value={item}/></Col>
+            </Form.Group>
+        </Form.Row>
+            :
+        <Row>
+            <Col>{term}</Col>
+            <Col><span className={classId}>{item}</span></Col>
+        </Row>
+    }
+    </>)
+};
 
-let ListDefinition = ({ list, classId, term, isEditing, children }: { list: any, classId: string, term: string, isEditing: boolean, children?: any }) => (
+let ListDefinition = ({ list, classId, term, isEditing, children }: { list: any[], classId: string, term: string, isEditing: boolean, children?: any }) => {
+    return (
     <>
+        {isEditing ? 
+            <Form.Row>
+                <Form.Group controlId={term}>
+                    <Col><Form.Label>{term}</Form.Label></Col>
+                    <Col><Form.Control type="textarea" placeholder={term} value={list.join('\n')}/></Col>
+                </Form.Group>
+            </Form.Row>
+            :
+            <Row>
+                <Col>{term}</Col>
+                <Col>
+                    <ListGroup>
+                        {list && list.map((fn: string, idx: number) => <ListGroup.Item className={classId} key={uuidv4()}>{children} {fn}</ListGroup.Item>)}
+                    </ListGroup>
+                </Col>
+            </Row>
+        }
         <dt>{term}</dt>
         <dd>
             {isEditing ?
                 <span>{<textarea id={classId} defaultValue={(list && list.join('\n')) || ''} />}</span>
-                : <>{list && list.map((fn: any, idx: number) => <span className={`${classId} ${0 < idx ? 'notfirst' : ''}`} key={uuidv4()}>{children} {fn}</span>)}</>
             }
         </dd>
         {!list && <br />}
     </>
-);
+)};
 
 const saveButtonHandler = (person: Person, editModeControlFunction: any, serviceCall: any) => {
     const doc: Document = document!;

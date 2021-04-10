@@ -31,7 +31,7 @@ nav p {
     color: thistle;
 }
 
-main {
+/* main {
     margin-left: 15%;
     max-width: 70%;
     min-height: 100%;
@@ -66,15 +66,25 @@ div.controls a {
 div.controls a:active {
     color: red;
     border-style: inset;
+} */
+
+.personname {
+    text-decoration: underline;
+    font-weight: bolder;
+    font-size: xx-large;
 }
 
-h1.lastname,
-h2.initials,
-h4.pers-id {
-    display: inline-block;
+.pers-age {
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 150%;
 }
 
-h4.pers-id {
+.pers-id {
+    font-weight: bolder;
+}
+
+/* h4.pers-id {
     margin-left: 20px;
 }
 
@@ -100,7 +110,7 @@ dt {
     margin-left: 0em;
 }
 
-span.lastname {
+.lastname {
     position: relative;
     left: 2em;
     text-decoration: underline;
@@ -162,4 +172,4 @@ dd {
     margin-left: 25em;
     position: relative;
     top: -3em;
-}
+} */
