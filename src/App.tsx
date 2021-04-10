@@ -1,6 +1,6 @@
 import './App.css';
-import { Header } from './HeaderComponent';
-import { PersonSelection } from './PersonSelectionComponent';
+import { Header } from './DisplayComponents/HeaderComponent';
+import { PersonSelection } from './DisplayComponents/PersonSelectionComponent';
 import { PersonDisplay } from './PersonDisplayComponent';
 import { personReducer, PersonsService, PERSON_INITIAL_STATE } from './Person/Service/PersonsService'
 import { ChangeEvent, useEffect, useReducer, useState } from 'react';

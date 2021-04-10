@@ -6,11 +6,11 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import FormControl from 'react-bootstrap/FormControl';
 import { ChangeEvent, FormEvent, MouseEvent, MouseEventHandler, useState } from 'react';
-import { Person } from './Person/Domain/Person'
+import { Person } from '../Person/Domain/Person'
 import { Alert } from 'react-bootstrap';
 import React from 'react';
-import { PhoneNumber } from './Person/Domain/PhoneNumber';
-import { Address } from './Person/Domain/Address';
+import { PhoneNumber } from '../Person/Domain/PhoneNumber';
+import { Address } from '../Person/Domain/Address';
 
 const RECORD_SEPARATOR = '\n';
 

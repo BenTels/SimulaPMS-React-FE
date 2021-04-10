@@ -1,6 +1,6 @@
 import React from 'react';
-import { Person } from './Person/Domain/Person'
-import { PERSON_STATE_LOADING, PERSON_STATE_ERROR, PERSON_STATE_LOADED } from './Person/Service/PersonsService'
+import { Person } from '../Person/Domain/Person'
+import { PERSON_STATE_LOADING, PERSON_STATE_ERROR, PERSON_STATE_LOADED } from '../Person/Service/PersonsService'
 
 export let PersonSelection = (props: any) => {
     let caseContent = () => {
