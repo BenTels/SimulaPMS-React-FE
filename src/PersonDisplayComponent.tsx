@@ -177,6 +177,7 @@ let ListDefinition = ({ list, classId, term, isEditing, children }: { list: any[
         <dd>
             {isEditing ?
                 <span>{<textarea id={classId} defaultValue={(list && list.join('\n')) || ''} />}</span>
+                : <span />
             }
         </dd>
         {!list && <br />}

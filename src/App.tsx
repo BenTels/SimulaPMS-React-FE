@@ -1,11 +1,11 @@
 import './App.css';
 import { Header } from './DisplayComponents/HeaderComponent';
 import { PersonSelection } from './DisplayComponents/PersonSelectionComponent';
-import { PersonDisplay } from './PersonDisplayComponent';
+import { PersonDisplay } from './DisplayComponents/PersonDisplay/PersonDisplayComponent';
 import { personReducer, PersonsService, PERSON_INITIAL_STATE } from './Person/Service/PersonsService'
 import { ChangeEvent, useEffect, useReducer, useState } from 'react';
 import { usePersistableState } from './UsePersistableState';
-import { subscribeToPersonTopic } from './PersonUpdateListener';
+// import { subscribeToPersonTopic } from './PersonUpdateListener';
 import React from 'react';
 import { Person } from './Person/Domain/Person';
 

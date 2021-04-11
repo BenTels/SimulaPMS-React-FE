@@ -5,7 +5,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import FormControl from 'react-bootstrap/FormControl';
-import { ChangeEvent, FormEvent, MouseEvent, MouseEventHandler, useState } from 'react';
+import { ChangeEvent, MouseEvent, useState } from 'react';
 import { Person } from '../Person/Domain/Person'
 import { Alert } from 'react-bootstrap';
 import React from 'react';
@@ -44,7 +44,7 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction }:
         if (addressId === 'billing') {
             newAdr = fieldState.billingAddress.copy({newLines: val});
             setFieldState(fieldState.copy({billingAddress: newAdr}));
-        } else if (addressId == 'correspondence') {
+        } else if (addressId === 'correspondence') {
             newAdr = fieldState.mainCorrespondenceAddress.copy({newLines: val});
             setFieldState(fieldState.copy({correspondenceAddress: newAdr}));
         }
@@ -55,7 +55,7 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction }:
         if (addressId === 'billing') {
             newAdr = fieldState.billingAddress.copy({newCountry: val});
             setFieldState(fieldState.copy({billingAddress: newAdr}));
-        } else if (addressId == 'correspondence') {
+        } else if (addressId === 'correspondence') {
             newAdr = fieldState.mainCorrespondenceAddress.copy({newCountry: val});
             setFieldState(fieldState.copy({correspondenceAddress: newAdr}));
         }

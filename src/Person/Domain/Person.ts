@@ -9,7 +9,7 @@ export class Person {
         readonly lastname : string,
         readonly firstnames : string[] = [],
         readonly middlenames: string[] = [],
-        readonly dob: NullableString = null,
+        readonly dob: string = '',
         readonly ageclass : AgeClassType = null,
         readonly emailaddresses: string[] = [],
         readonly phonenumbers: PhoneNumber[] = [],
@@ -23,7 +23,7 @@ export class Person {
         lastname : string,
         firstnames? : string[],
         middlenames?: string[],
-        dob?: NullableString,
+        dob?: string,
         ageclass? : AgeClassType,
         emailaddresses?: string[],
         phonenumbers?: PhoneNumber[] | null,
@@ -34,7 +34,7 @@ export class Person {
 
     static fromPerson(id: string, lastname: string, 
         firstnames: string[] = [], middlenames: string[] = [], 
-        dob: NullableString = null, 
+        dob: string = '', 
         emailAddresses: string[] = [], 
         phonedata: PhoneNumberData[] = [], 
         correspondenceAddressLines: string[] = [], correspondenceAddressCountry: string = '', 
@@ -142,5 +142,12 @@ export class Person {
         let rightName = right.toLastNameAndInitials();
         return leftName.localeCompare(rightName, 'en', { sensitivity: 'base', ignorePunctuation: true });
     };
-    
+ 
+    effectiveBillingAddress(): Address {
+        if (this.billingAddress === Address.EMPTY_ADDRESS) {
+            return this.mainCorrespondenceAddress;
+        } else {
+            return this.billingAddress;
+        }
+    }
 }
