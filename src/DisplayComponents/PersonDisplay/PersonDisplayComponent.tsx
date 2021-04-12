@@ -33,5 +33,5 @@ export let PersonDisplay = ({ person, removeHandler, updateHandler }:
                     }
                 </main>
             )
-        } else return (<main />) 
+        } else return (<main />)
 }
