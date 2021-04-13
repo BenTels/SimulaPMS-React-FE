@@ -25,13 +25,13 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction }:
     const setPhoneIsMobile = (idx: number, isMobile: boolean): void => {
         let pL: PhoneNumber[] = [...fieldState.phonenumbers];
         pL[idx] = pL[idx].copy({newMobile : isMobile});
-        setFieldState(fieldState.copy({phonedata:pL}));
+        setFieldState(fieldState.copy({phonenumbers:pL}));
     };
     
     const setPhoneNumber = (idx: number, number: string): void => {
         let pL: PhoneNumber[] = [...fieldState.phonenumbers];
         pL[idx] = pL[idx].copy({newNumber : number});
-        setFieldState(fieldState.copy({phonedata:pL}));
+        setFieldState(fieldState.copy({phonenumbers:pL}));
     };
 
     const updateFormState = (fieldname: string, val: any) => {
@@ -46,7 +46,7 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction }:
             setFieldState(fieldState.copy({billingAddress: newAdr}));
         } else if (addressId === 'correspondence') {
             newAdr = fieldState.mainCorrespondenceAddress.copy({newLines: val});
-            setFieldState(fieldState.copy({correspondenceAddress: newAdr}));
+            setFieldState(fieldState.copy({mainCorrespondenceAddress: newAdr}));
         }
     } 
 
@@ -57,7 +57,7 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction }:
             setFieldState(fieldState.copy({billingAddress: newAdr}));
         } else if (addressId === 'correspondence') {
             newAdr = fieldState.mainCorrespondenceAddress.copy({newCountry: val});
-            setFieldState(fieldState.copy({correspondenceAddress: newAdr}));
+            setFieldState(fieldState.copy({mainCorrespondenceAddress: newAdr}));
         }
     } 
 
@@ -86,7 +86,7 @@ export const NewPersonDialog = ({ show, handleClose, addPersonServiceFunction }:
     const addButton = (evt: MouseEvent): void => {
         let pL = [...fieldState.phonenumbers];
         pL.push(new PhoneNumber('', true));
-        setFieldState(fieldState.copy({phonedata: pL}));
+        setFieldState(fieldState.copy({phonenumbers: pL}));
     }
 
     const phoneBlock = fieldState.phonenumbers.map((phn: PhoneNumber, idx: number): any => (

@@ -66,7 +66,7 @@ export class PersonsService {
     static getPerson = (uri: string, callbackOnSuccess: (p: Person) => void): void => {
         fetch(new Request(uri, { method: 'GET' }))
             .then((response: Response) => response.json())
-            .then((json: string) => Person.fromJSON(json))
+            .then((json: any) => Person.fromObject(json))
             .then((result: Person) => {
                 if (callbackOnSuccess) {
                     callbackOnSuccess(result);

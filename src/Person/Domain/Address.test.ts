@@ -2,6 +2,14 @@ import { Address } from "./Address";
 
 let fullAddress = () => new Address('NL', ["Twickel 13", "5655 JK", "Eindhoven"]);
 
+test('Type of object',
+    () => {
+        let a:Address = fullAddress();
+        expect(typeof a).toEqual('object');
+        expect(a instanceof Address).toBe(true);
+    }
+);
+
 test('Basic copy',
     () => {
         let a = fullAddress();
@@ -41,6 +49,6 @@ test('Copy, remove all lines',
         let a = fullAddress();
         let ac = a.copy({newLines : []});
         expect(ac.country).toEqual(a.country);
-        expect(ac.lines).toEqual(undefined);
+        expect(ac.lines).toEqual([]);
     }
 );

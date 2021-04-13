@@ -3,32 +3,29 @@ import { useEffect, useState } from "react";
 import { Person } from "../../Person/Domain/Person";
 import { PersonDisplayDetails } from "./PersonDisplayDetailsComponent";
 import { PersonDisplayHeader } from "./PersonDisplayHeaderComponent";
-import { PersonEditHeader } from "./PersonEditHeaderComponent";
+import { PersonEditSection } from "./PersonEditComponent";
 
-export let PersonDisplay = ({ person, removeHandler, updateHandler }: 
+export let PersonDisplay = ({ person, resetSelectedPerson, removeHandler, updateHandler }: 
     {person?: Person | null | undefined, 
+    resetSelectedPerson: (code:string)=> void,
     removeHandler: (p:Person) => void, 
     updateHandler: (p:Person) => void}) => {
 
-        const localPerson: Person|undefined = person?.copy();
         const [isEditing, setEditing] = useState<boolean>(false);
-
+        
         const switchEditMode: ()=>void = () => setEditing(!isEditing);
 
         useEffect(() => setEditing(false), [person]);
 
-        if (localPerson) {
+        if (person) {
             return (
                 <main>
                     {isEditing ?
-                        <>
-                            <PersonEditHeader person={localPerson} updatePersonHandler={updateHandler} buttonHandler={switchEditMode} />
-                            { /* <PersonEditDetails person={localPerson} setLocalPerson={setLocalPerson} /> */}
-                        </>
+                        <PersonEditSection person={person} updatePersonHandler={updateHandler} resetSelectedPerson={resetSelectedPerson} switchEditMode={switchEditMode} />
                         :
                         <>
-                            <PersonDisplayHeader person={localPerson} removePersonHandler={removeHandler} buttonHandler={switchEditMode} />
-                            <PersonDisplayDetails person={localPerson} />
+                            <PersonDisplayHeader person={person} removePersonHandler={removeHandler} buttonHandler={switchEditMode} />
+                            <PersonDisplayDetails person={person} />
                         </>
                     }
                 </main>

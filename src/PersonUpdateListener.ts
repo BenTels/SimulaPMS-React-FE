@@ -1,19 +1,20 @@
-import { getPerson, PERSON_REDUCER_TOKEN_ADDED, PERSON_REDUCER_TOKEN_REMOVED, PERSON_REDUCER_TOKEN_UPDATED } from "./PersonsServiceConnector";
+import { Person } from "./Person/Domain/Person";
+import { ActionType, PersonsService, PERSON_REDUCER_TOKEN_ADDED, PERSON_REDUCER_TOKEN_REMOVED, PERSON_REDUCER_TOKEN_UPDATED } from "./Person/Service/PersonsService"
 
 const PERSON_TOPIC_ENDPOINT = 'ws://localhost:8080/topics/person';
 
-export const subscribeToPersonTopic = (dispatchPersons, setSelectedPerson) => {
+export const subscribeToPersonTopic = (dispatchPersons:(a: ActionType) => void) => {
 
-    const topic = new WebSocket(PERSON_TOPIC_ENDPOINT);
+    const topic:WebSocket = new WebSocket(PERSON_TOPIC_ENDPOINT);
 
-    setTopicLifecycle(topic, dispatchPersons, setSelectedPerson);
+    setTopicLifecycle(topic, dispatchPersons);
 
 };
 
-const setTopicLifecycle = (topic, dispatchPersons, setSelectedPerson) => {
+const setTopicLifecycle = (topic:WebSocket, dispatchPersons:(a: ActionType) => void) => {
 
-    let timeout = 250;
-    let connectInterval;
+    let timeout: number = 250;
+    let connectInterval:NodeJS.Timeout;
 
     topic.onopen = () => { 
         console.log('CONNECTED');
@@ -21,14 +22,14 @@ const setTopicLifecycle = (topic, dispatchPersons, setSelectedPerson) => {
         clearTimeout(connectInterval);
     }
 
-    topic.onmessage = (evt) => {
+    topic.onmessage = (evt: MessageEvent) => {
         const eventData = JSON.parse(evt.data);
         switch (eventData.changeType) {
             case 'ADDED':
-                getPerson(eventData.resource, (person) => dispatchPersons({ type: PERSON_REDUCER_TOKEN_ADDED, payload: person }));
+                PersonsService.getPerson(eventData.resource, (person:Person) => dispatchPersons({ type: PERSON_REDUCER_TOKEN_ADDED, payload: person }));
                 break;
             case 'UPDATED':
-                getPerson(eventData.resource, (person) => dispatchPersons({ type: PERSON_REDUCER_TOKEN_UPDATED, payload: person }));
+                PersonsService.getPerson(eventData.resource, (person:Person) => dispatchPersons({ type: PERSON_REDUCER_TOKEN_UPDATED, payload: person }));
                 break;
             case 'REMOVED':
                 const idx = eventData.resource.lastIndexOf('/');
@@ -39,22 +40,22 @@ const setTopicLifecycle = (topic, dispatchPersons, setSelectedPerson) => {
         }
     };
 
-    topic.onclose = (err) => {
+    topic.onclose = (err:CloseEvent): void => {
         console.log('DISCONNECTED -- will attempt reconnect');
         console.log(err.reason);
         timeout = 2 * timeout;
         connectInterval = setTimeout(check, Math.min(10000, timeout));
     }
 
-    topic.onerror = (err) => {
+    topic.onerror = (err:Event): void => {
         console.log('ERROR');
-        console.log(err.reason);
+        console.log(err);
         topic.close();
     }
 
     const check = () => {
         if (topic.readyState === WebSocket.CLOSED) {
-            subscribeToPersonTopic(dispatchPersons, setSelectedPerson);
+            subscribeToPersonTopic(dispatchPersons);
         }
     }
 

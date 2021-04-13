@@ -5,7 +5,7 @@ import { PersonDisplay } from './DisplayComponents/PersonDisplay/PersonDisplayCo
 import { personReducer, PersonsService, PERSON_INITIAL_STATE } from './Person/Service/PersonsService'
 import { ChangeEvent, useEffect, useReducer, useState } from 'react';
 import { usePersistableState } from './UsePersistableState';
-// import { subscribeToPersonTopic } from './PersonUpdateListener';
+import { subscribeToPersonTopic } from './PersonUpdateListener';
 import React from 'react';
 import { Person } from './Person/Domain/Person';
 
@@ -42,14 +42,14 @@ function App() {
 
   useEffect(() => localStorage.setItem(LOCALSTORAGE_FILTER_KEY, activeFilter), [activeFilter]);
   useEffect(() => PersonsService.loadPersonsList(dispatchPersons, activeFilter), [activeFilter]);
-/*   useEffect(() => subscribeToPersonTopic(dispatchPersons), []); */
+  useEffect(() => subscribeToPersonTopic(dispatchPersons), []);
   
 
   return (
     <div>
       <Header filterText={activeFilter} filterChangedHandler={filterChangedHandler} addPersonServiceFunction={addPersonHandler} /> 
       <PersonSelection personData={{ persons, loadState, selectPersonClickHandler }} />
-      <PersonDisplay person={selectedPerson} removeHandler={removePersonHandler} updateHandler={updatePersonHandler} /> 
+      <PersonDisplay person={selectedPerson} resetSelectedPerson={setSelectedPersonByCode} removeHandler={removePersonHandler} updateHandler={updatePersonHandler} /> 
     </div>
   );
 }

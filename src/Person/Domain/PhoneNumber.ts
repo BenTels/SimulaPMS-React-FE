@@ -3,6 +3,8 @@ export type PhoneNumberData = {isMobile : boolean, number: string};
 export class PhoneNumber {
     constructor (readonly number:string , readonly mobile : boolean) {}
 
+    static EMPTY_PHONENUMBER: PhoneNumber = new PhoneNumber('', true);
+
     copy({newNumber, newMobile} : {newNumber? : string, newMobile?: boolean} = {}): PhoneNumber {
         return new PhoneNumber(
             newNumber !== undefined ? newNumber : this.number,
